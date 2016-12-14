@@ -18,8 +18,7 @@ public class Song {
     private static Song instance;
     public static Song getInstance()
     {
-        if(instance==null)
-            instance = new Song();
+        instance = new Song();
         return instance;
     }
     private final StringProperty title; 
@@ -46,19 +45,19 @@ public Song() {
     }
 
     public StringProperty artistProperty() {
-        return artist;
+        return this.artist;
     }
     public StringProperty titleProperty() {
-        return title;
+        return this.title;
     }
     public StringProperty categoryProperty() {
-        return category;
+        return this.category;
     }
     public StringProperty filePathProperty() {
-        return filePath;
+        return this.filePath;
     }
     public IntegerProperty timeProperty() {
-        return time;
+        return this.time;
     }
     
     
