@@ -8,11 +8,9 @@ package pl.mytunesapp.GUI.Controller;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -33,6 +31,7 @@ import javafx.stage.Stage;
 import pl.mytunesapp.BE.PlayList;
 import pl.mytunesapp.BE.Song;
 import pl.mytunesapp.BLL.MainAppManager;
+import pl.mytunesapp.GUI.Model.MainAppModel;
 import pl.mytunesapp.MainApp;
 import pl.mytunesapp.GUI.Controller.EditSongDialogController;
 
@@ -45,8 +44,9 @@ import pl.mytunesapp.GUI.Controller.EditSongDialogController;
 
 public class MainViewController implements Initializable {
 private MainApp mainApp = new MainApp();
+private MainAppModel model = new MainAppModel();
 public static MainViewController ViewController;
-   
+
     @FXML
     private Label playListTxtHolder;
     @FXML
@@ -111,39 +111,31 @@ public static MainViewController ViewController;
     @FXML
     private Button searchButton;
 
-     ObservableList<Song> allSongsList = FXCollections.observableArrayList(Song ->
-            new Observable[] {
-                    Song.titleProperty(),
-                    Song.artistProperty(),
-                    Song.categoryProperty(),
-                    Song.timeProperty(),
-                    Song.filePathProperty() 
-            });
-    
-     ObservableList<PlayList> allPlayListsList = FXCollections.observableArrayList();
+
+    ObservableList<Song> tableAllSongsContent =  MainAppModel.getInstance().getAllSongsList();
+    ObservableList<PlayList> tableAllPlayListsContent =  MainAppModel.getInstance().getAllPlayListsList();
+
 
     
-
-   // private MainAppModel model = new MainAppModel();
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         disableButtons();
         fixTableViews();
-        fixListeners();
-        ViewController = this;
-           
-           
+        ViewController=this;
+
     }    
-    public void refreshSongs()
+    public void refreshSongsView()
     {
         allSongsTableView.refresh();
     }
+    public void refreshPlaylistsView()
+    {
+        playListTableView.refresh();
+    }
         @FXML
     private void addSongToPlaylist(ActionEvent event) {
-    PlayList playlist = returnPlayListsTableSelection();
-    Song song = returnAllSongsTableSelection();
-           if(song!=null && playlist!=null) 
-                playlist.addSong(song);
+    model.addSongToPlaylistList(returnPlayListsTableSelection(), returnAllSongsTableSelection());
+
     }
 
     @FXML
@@ -165,6 +157,7 @@ public static MainViewController ViewController;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/pl/mytunesapp/GUI/View/EditPlaylistDialogFXML.fxml"));
                // fxmlLoader.setController(new EditController(allSongsTableView.getSelectionModel().getSelectedItem()));
+               
                 Parent root2 = (Parent) fxmlLoader.load();
                 
                 EditPlaylistDialogController editcontroller = fxmlLoader.getController();
@@ -188,18 +181,8 @@ public static MainViewController ViewController;
     
     @FXML
     private void play(ActionEvent event) {
-        System.out.println("po play song"+allSongsList.size());
-        System.out.println("po play playlist"+allPlayListsList.size());
-        /*
-        System.out.println(       
-                allSongsList.get(0).getArtist()+
-                allSongsList.get(0).getCategory()+
-                allSongsList.get(0).getFilePath()+
-                allSongsList.get(0).getTime()+
-                allSongsList.get(0).getTitle() )
-*/
-       ;}
 
+    }
 
     @FXML
     private void next(ActionEvent event) {
@@ -236,10 +219,10 @@ public static MainViewController ViewController;
           }
     }
 
-    public void clearAllSongsTableSelection() {
+    private void clearAllSongsTableSelection() {
         allSongsTableView.getSelectionModel().clearSelection();
     }
-    public void clearPlayListsTableSelection() {
+    private void clearPlayListsTableSelection() {
         playListTableView.getSelectionModel().clearSelection();
     }
     public PlayList returnPlayListsTableSelection() {
@@ -249,10 +232,9 @@ public static MainViewController ViewController;
         return allSongsTableView.getSelectionModel().getSelectedItem();
     }    
     public ObservableList<Song> getSongsInPlaylist()
-    {
-        PlayList playlist = returnPlayListsTableSelection();
-        return playlist.getListOfSongs();
-   }
+            {
+               return model.getAllSongsFromPlaylist(returnPlayListsTableSelection());
+            }
     @FXML
     private void deleteSong(ActionEvent event) {
         Song selectedSong = allSongsTableView.getSelectionModel().getSelectedItem();
@@ -278,9 +260,11 @@ public static MainViewController ViewController;
                 stage.show();
         } catch(Exception e) {
            e.printStackTrace();
-          }      
+          }
+             
     }
-   
+    
+
     @FXML
     private void close(ActionEvent event) {
     }
@@ -290,30 +274,10 @@ public static MainViewController ViewController;
     }
     
     
-    public void addSong(Song song)
-    {
-        this.allSongsList.add(song);
-        System.out.println("size po add song"+allSongsList.size());
-    }
     
-    public void addPlayList(PlayList playlist)
-    {
-        this.allPlayListsList.add(playlist);
-        System.out.println("size po add Playlist"+allPlayListsList.size());
-    }
-    private void fixListeners(){
-        allSongsList.addListener((ListChangeListener.Change<? extends Song> c) -> {
-            while (c.next()) {
-                  if (c.wasUpdated()) {
-                   refreshSongs();
-
-               }    
-           }
-        });
-    }
+    
     private void fixTableViews(){
- 
-                allSongsTableView.itemsProperty().setValue(allSongsList);
+                allSongsTableView.itemsProperty().setValue(tableAllSongsContent);
         titleColumn.setCellValueFactory(
                 new PropertyValueFactory<Song, String>("Title")
         );
@@ -327,7 +291,7 @@ public static MainViewController ViewController;
                 new PropertyValueFactory<Song, Integer>("Time")
         );
            
-           playListTableView.itemsProperty().setValue(allPlayListsList);
+           playListTableView.itemsProperty().setValue(tableAllPlayListsContent);
            
            playlistNameColumn.setCellValueFactory(
                    new PropertyValueFactory<PlayList, String>("Name"));

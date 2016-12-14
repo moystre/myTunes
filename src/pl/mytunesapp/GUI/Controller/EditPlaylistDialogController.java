@@ -14,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import pl.mytunesapp.BE.PlayList;
+import pl.mytunesapp.GUI.Model.MainAppModel;
 
 /**
  * FXML Controller class
@@ -22,6 +23,7 @@ import pl.mytunesapp.BE.PlayList;
  */
 public class EditPlaylistDialogController implements Initializable {
     private PlayList playlist;
+    private MainAppModel model = MainAppModel.getInstance();
     @FXML
     private TextField playlistDialogNameField;
     @FXML

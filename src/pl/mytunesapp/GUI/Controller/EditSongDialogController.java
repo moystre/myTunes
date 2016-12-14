@@ -16,7 +16,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import pl.mytunesapp.BE.Song;
-
+import pl.mytunesapp.GUI.Model.MainAppModel;
 
 /**
  * FXML Controller class
@@ -25,6 +25,7 @@ import pl.mytunesapp.BE.Song;
  */
 public class EditSongDialogController implements Initializable {
     private Song song;
+    private MainAppModel model = MainAppModel.getInstance();
     @FXML
     private Button songDialogCategoryMore;
     @FXML
@@ -74,15 +75,11 @@ public class EditSongDialogController implements Initializable {
 
     @FXML
     private void handleSaveAction(ActionEvent event) {
-        try {
         song.setTitle(songDialogTitleField.getText());
         song.setArtist(songDialogArtistField.getText());
         song.setCategory(songDialogCategoryComboBox.getSelectionModel().getSelectedItem().toString());
         song.setFilePath(songDialogFilePathField.getText());
         song.setTime(Integer.parseInt(songDialogTimeField.getText()));
-        
-        } catch (Exception e) {
-        }
         Stage stage = (Stage) songDialogArtistField.getScene().getWindow();
         stage.close();
     }

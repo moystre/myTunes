@@ -38,21 +38,13 @@ public class PlayList {
     {
         name.set(aname);
         duration.set(aduration);
-        numberOfSongs.set(listOfSongs.size());
+        numberOfSongs.set(anumberofsongs);
         listOfSongs.addAll(listOfSongs);
-    }
-
-    public PlayList(String aname) {
-        name.set(aname);
-        duration.set("dur");
-        numberOfSongs.set(0);
-        this.listOfSongs = FXCollections.observableArrayList();
     }
     
     public void addSong(Song song)
     {
         listOfSongs.add(song);
-        System.out.println(listOfSongs.size());
     }
     
       public StringProperty nameProperty() {

@@ -22,6 +22,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import pl.mytunesapp.BE.Song;
 import pl.mytunesapp.BLL.MainAppManager;
+import pl.mytunesapp.GUI.Model.MainAppModel;
 
 /**
  * FXML Controller class
